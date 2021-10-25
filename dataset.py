@@ -13,8 +13,8 @@ def load_json(folder):
 def create_dataset(warper, ds_size=1024, hand_size=16, max_repeat=2):
 
     dsx = np.zeros( [ ds_size, hand_size ] )
-    dsy = np.zeros( [ ds_size, hand_size, len( warper ) ] )
-    dsy1 = np.zeros( [ ds_size, hand_size, len( warper ) ] )
+    dsy_sets = np.zeros( [ ds_size, hand_size, len( warper ) ] )
+    dsy_math = np.zeros( [ ds_size, hand_size, len( warper ) ] )
     for x in range( ds_size ):
         
         selected = np.zeros( len( warper ) )
@@ -25,12 +25,12 @@ def create_dataset(warper, ds_size=1024, hand_size=16, max_repeat=2):
             dsx[x,y] = card
             selected[card] = 1
             count[card] += 1
-            dsy[x,y] = np.copy( selected )
-            dsy1[x,y] = np.copy( count )
+            dsy_sets[x,y] = np.copy( selected )
+            dsy_math[x,y] = np.copy( count )
     
-    return dsx, dsy, dsy1
+    return dsx, dsy_sets, dsy_math
 
-def sets_tasks_v2(data, hand_size, wp, op_size=4):
+def sets_tasks(data, hand_size, wp, op_size=4):
 
     div = len(data) // op_size
     
@@ -215,7 +215,44 @@ def complex_sets_tasks(data, hand_size, wp):
             y4[d,j] = np.copy( s_d2 )
 
     return ( xa, xb, xc ), y1, y2, y3, y4
+
+def math_tasks(data, hand_size, wp, op_size=4):
+
+    div = len(data) // op_size
     
+    xs = []
+    yu = np.zeros( [ div, hand_size, wp ] )
+    yd = np.zeros( [ div, hand_size, wp ] )
+
+    for d in range( div ):
+
+        ids = np.arange( d * op_size, d * op_size + op_size )
+        values = data[ids].astype(np.int32)
+
+        s_u = np.zeros( wp )
+        s_d = np.zeros( wp )
+        s_m = np.zeros( wp )
+
+        xs.append( values )
+
+        for j in range( hand_size ):
+
+            # sum
+            for vl in values:
+                v = int(vl[j])
+                s_u[v] += 1
+            yu[d,j] = np.copy( s_u )
+
+            # dif
+            s_d[values[0,j]] += 1
+            reference = values[0:1,:j+1].flatten().tolist()
+            total = values[1:,:j+1].flatten().tolist()
+            for r in reference:
+                if r in total:
+                    s_d[r] -= 1
+            yd[d,j] = np.copy( s_d )
+
+    return xs, yu, yd
 
 class CardsWarper:
 
@@ -292,12 +329,12 @@ class PrioritizedReplay(object):
         weights = np.array( weights, dtype = np.float32 ) 
         
         x = np.array( [ v[0] for v in samples ] )
-        y = np.array( [ v[1] for v in samples ] )
-        y1 = np.array( [ v[2] for v in samples ] )
+        y_sets = np.array( [ v[1] for v in samples ] )
+        y_math = np.array( [ v[2] for v in samples ] )
 
         return tf.cast( tf.convert_to_tensor( x ), tf.int32 ),\
-               tf.cast( tf.convert_to_tensor( y ), tf.int32 ),\
-               tf.cast( tf.convert_to_tensor( y1 ), tf.float32 ),\
+               tf.cast( tf.convert_to_tensor( y_sets ), tf.int32 ),\
+               tf.cast( tf.convert_to_tensor( y_math ), tf.float32 ),\
                indices, tf.convert_to_tensor( weights )
 
     def sample_batch_v2(self, bs, sz):
@@ -328,7 +365,7 @@ class PrioritizedReplay(object):
         y = np.array( [ v[1] for v in samples ] )
 
         xs1, y1, y2, y3, y4 = complex_sets_tasks( x, self.hand_size, len( self.wp ) )
-        xs2, yu, yd, ym = sets_tasks_v2( x, self.hand_size, len( self.wp ), sz )
+        xs2, yu, yd, ym = sets_tasks( x, self.hand_size, len( self.wp ), sz )
 
         return tf.cast( tf.convert_to_tensor( x ), tf.int32 ),\
                tf.cast( tf.convert_to_tensor( y ), tf.int32 ),\

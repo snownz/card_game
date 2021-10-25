@@ -51,13 +51,9 @@ class CardsEmbeding_v5( Module ):
         # embeding count tasks
         # self.sub_c_m = Dense( embeding_size * 2, name = 'h_sub_c_m', activation = sigmoid )
         # self.add_c_m = Dense( embeding_size * 2, name = 'h_add_c_m', activation = sigmoid )
-        # self.mul_c_m = Dense( embeding_size * 2, name = 'h_mul_c_m', activation = sigmoid )
-        # self.div_c_m = Dense( embeding_size * 2, name = 'h_mul_c_m', activation = sigmoid )
 
         # self.add_c = Nalu( embeding_size, name = 'h_add_c' )
-        # self.mul_c = Nalu( embeding_size, name = 'h_mul_c' )
         # self.sub_c = Nalu( embeding_size, name = 'h_sub_c' )
-        # self.div_c = Nalu( embeding_size, name = 'h_sub_c' )
         
         # output sets
         self.out_isin = Dense( num_cards * 2, name = 'base_o_isin' )
@@ -164,7 +160,7 @@ class CardsEmbeding_v5( Module ):
     def get_embeding(self, input, eval=False):
         emb = tf.nn.embedding_lookup( self.embeding, input )
         h, _ = self.layer( emb, eval )
-        return self.isin( h ) #, self.sets( h )
+        return self.isin( h ), self.frequency( h )
 
     def add_op(self, a, b):
         vl = tf.concat( [ a, b ], -1 )
