@@ -1,0 +1,16 @@
+{
+    "0": "coringa",
+    "1": "1:paus",      "14": "1:ouro",      "27": "1:copas",      "40": "1:espada",
+    "2": "2:paus",      "15": "2:ouro",      "28": "2:copas",      "41": "2:espada",
+    "3": "3:paus",      "16": "3:ouro",      "29": "3:copas",      "42": "3:espada",
+    "4": "4:paus",      "17": "4:ouro",      "30": "4:copas",      "43": "4:espada",
+    "5": "5:paus",      "18": "5:ouro",      "31": "5:copas",      "44": "5:espada",
+    "6": "6:paus",      "19": "6:ouro",      "32": "6:copas",      "45": "6:espada",
+    "7": "7:paus",      "20": "7:ouro",      "33": "7:copas",      "46": "7:espada",
+    "8": "8:paus",      "21": "8:ouro",      "34": "8:copas",      "47": "8:espada",
+    "9": "9:paus",      "22": "9:ouro",      "35": "9:copas",      "48": "9:espada",
+    "10": "10:paus",     "23": "10:ouro",     "36": "10:copas",     "49": "10:espada",
+    "11": "valete:paus", "24": "valete:ouro", "37": "valete:copas", "50": "valete:espada",
+    "12": "dama:paus",   "25": "dama:ouro",   "38": "dama:copas",   "51": "dama:espada",
+    "13": "rei:paus",    "26": "rei:ouro",    "39": "rei:copas",    "52": "rei:espada"
+}
